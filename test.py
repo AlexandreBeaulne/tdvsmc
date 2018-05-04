@@ -42,7 +42,7 @@ def test(rank, args, shared_model, counter):
 
         value, logit, (hx, cx) = model((Variable(
             state.unsqueeze(0), volatile=True), (hx, cx)))
-        prob = F.softmax(logit)
+        prob = F.softmax(logit, dim=1)
         action = prob.max(1, keepdim=True)[1].data.numpy()
 
         state, reward, done, _ = env.step(action[0, 0])
