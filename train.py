@@ -8,8 +8,7 @@ from model import ActorCritic
 
 
 def ensure_shared_grads(model, shared_model):
-    for param, shared_param in zip(model.parameters(),
-                                   shared_model.parameters()):
+    for param, shared_param in zip(model.parameters(), shared_model.parameters()):
         if shared_param.grad is not None:
             return
         shared_param._grad = param.grad
@@ -43,10 +42,7 @@ def train(rank, args, shared_model, counter, lock, optimizer=None):
             cx = Variable(cx.data)
             hx = Variable(hx.data)
 
-        values = []
-        log_probs = []
-        rewards = []
-        entropies = []
+        values, log_probs, rewards, entropies = [], [], [], []
 
         for step in range(args.num_steps):
             episode_length += 1
@@ -94,13 +90,11 @@ def train(rank, args, shared_model, counter, lock, optimizer=None):
             advantage = R - values[i]
             value_loss = value_loss + 0.5 * advantage.pow(2)
 
-            # Generalized Advantage Estimataion
-            delta_t = rewards[i] + args.gamma * \
-                values[i + 1].data - values[i].data
+            # Generalized Advantage Estimation
+            delta_t = rewards[i] + args.gamma * values[i + 1].data - values[i].data
             gae = gae * args.gamma * args.tau + delta_t
 
-            policy_loss = policy_loss - \
-                log_probs[i] * Variable(gae) - args.entropy_coef * entropies[i]
+            policy_loss -= log_probs[i] * Variable(gae) - args.entropy_coef * entropies[i]
 
         optimizer.zero_grad()
 
@@ -109,3 +103,4 @@ def train(rank, args, shared_model, counter, lock, optimizer=None):
 
         ensure_shared_grads(model, shared_model)
         optimizer.step()
+
