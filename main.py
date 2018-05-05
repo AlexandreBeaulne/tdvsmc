@@ -48,9 +48,9 @@ if __name__ == '__main__':
     torch.manual_seed(args.seed)
     env = create_atari_env(args.env_name)
 
-    model, train_fn = {'A3C': (models.ActorCritic, train.a3c)}[args.algo]
+    Model, train_fn = {'A3C': (models.ActorCritic, train.a3c)}[args.algo]
 
-    shared_model = model(env.observation_space.shape[0], env.action_space)
+    shared_model = Model(env.observation_space.shape[0], env.action_space)
     shared_model.share_memory()
 
     optimizer = my_optim.SharedAdam(shared_model.parameters(), lr=args.lr)
@@ -61,7 +61,7 @@ if __name__ == '__main__':
     counter = mp.Value('i', 0)
     lock = mp.Lock()
 
-    p = mp.Process(target=test, args=(args.num_processes, args, shared_model, counter))
+    p = mp.Process(target=test, args=(args.num_processes, args, shared_model, counter, Model))
     p.start()
     processes.append(p)
 

@@ -7,15 +7,14 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 
 from envs import create_atari_env
-from models import ActorCritic
 
-def test(rank, args, shared_model, counter):
+def test(rank, args, shared_model, counter, Model):
     torch.manual_seed(args.seed + rank)
 
     env = create_atari_env(args.env_name)
     env.seed(args.seed + rank)
 
-    model = ActorCritic(env.observation_space.shape[0], env.action_space)
+    model = Model(env.observation_space.shape[0], env.action_space)
 
     model.eval()
 
