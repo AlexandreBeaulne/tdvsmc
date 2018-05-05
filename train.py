@@ -31,7 +31,7 @@ def a3c(rank, args, shared_model, counter, lock, optimizer):
     done = True
 
     episode_length = 0
-    while True:
+    while counter.value < args.total_steps:
         # Sync with the shared model
         model.load_state_dict(shared_model.state_dict())
         if done:

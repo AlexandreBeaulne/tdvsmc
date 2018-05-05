@@ -37,6 +37,8 @@ parser.add_argument('--max-episode-length', type=int, default=1000000,
 parser.add_argument('--env-name', default='PongDeterministic-v4',
                     help='environment to train on (default: PongDeterministic-v4)')
 parser.add_argument('--algo', default='A3C', choices={'A3C'})
+parser.add_argument('--total-steps', type=int, default=60000000,
+                    help='total number of steps to train')
 
 
 if __name__ == '__main__':
@@ -65,7 +67,7 @@ if __name__ == '__main__':
     p.start()
     processes.append(p)
 
-    for rank in range(0, args.num_processes):
+    for rank in range(args.num_processes):
         p = mp.Process(target=algo, args=(rank, args, shared_model, counter, lock, optimizer))
         p.start()
         processes.append(p)

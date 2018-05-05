@@ -29,7 +29,7 @@ def test(rank, args, shared_model, counter):
     # a quick hack to prevent the agent from stucking
     actions = deque(maxlen=100)
     episode_length = 0
-    while True:
+    while counter.value < args.total_steps:
         episode_length += 1
         # Sync with the shared model
         if done:
