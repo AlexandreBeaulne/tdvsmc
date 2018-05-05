@@ -20,7 +20,7 @@ def nstepqlearning(rank, args, shared_model, counter, lock, optimizer):
     env.seed(args.seed + rank)
 
     model1 = ActorCritic(env.observation_space.shape[0], env.action_space.n)
-    optimizer = optim.Adam(shared_model.parameters(), lr=args.lr)
+    model1.load_state_dict(shared_model.state_dict())
     model1.train()
 
     model2 = ActorCritic(env.observation_space.shape[0], env.action_space.n)
@@ -104,9 +104,6 @@ def a3c(rank, args, shared_model, counter, lock, optimizer):
     env.seed(args.seed + rank)
 
     model = ActorCritic(env.observation_space.shape[0], env.action_space.n)
-
-    optimizer = optim.Adam(shared_model.parameters(), lr=args.lr)
-
     model.train()
 
     state = env.reset()
