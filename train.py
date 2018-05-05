@@ -1,11 +1,11 @@
+
 import torch
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.autograd import Variable
 
 from envs import create_atari_env
-from model import ActorCritic
-
+from models import ActorCritic
 
 def ensure_shared_grads(model, shared_model):
     for param, shared_param in zip(model.parameters(), shared_model.parameters()):
@@ -14,7 +14,7 @@ def ensure_shared_grads(model, shared_model):
         shared_param._grad = param.grad
 
 
-def train(rank, args, shared_model, counter, lock, optimizer=None):
+def a3c(rank, args, shared_model, counter, lock, optimizer):
     torch.manual_seed(args.seed + rank)
 
     env = create_atari_env(args.env_name)
@@ -22,8 +22,7 @@ def train(rank, args, shared_model, counter, lock, optimizer=None):
 
     model = ActorCritic(env.observation_space.shape[0], env.action_space)
 
-    if optimizer is None:
-        optimizer = optim.Adam(shared_model.parameters(), lr=args.lr)
+    optimizer = optim.Adam(shared_model.parameters(), lr=args.lr)
 
     model.train()
 

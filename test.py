@@ -1,3 +1,4 @@
+
 import time
 from collections import deque
 
@@ -6,8 +7,7 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 
 from envs import create_atari_env
-from model import ActorCritic
-
+from models import ActorCritic
 
 def test(rank, args, shared_model, counter):
     torch.manual_seed(args.seed + rank)
@@ -49,17 +49,17 @@ def test(rank, args, shared_model, counter):
         done = done or episode_length >= args.max_episode_length
         reward_sum += reward
 
-        # a quick hack to prevent the agent from stucking
+        # a quick hack to prevent the agent from getting stuck
         actions.append(action[0, 0])
         if actions.count(actions[0]) == actions.maxlen:
             done = True
 
         if done:
-            print("Time {}, num steps {}, FPS {:.0f}, episode reward {}, episode length {}".format(
-                time.strftime("%Hh %Mm %Ss",
-                              time.gmtime(time.time() - start_time)),
-                counter.value, counter.value / (time.time() - start_time),
-                reward_sum, episode_length))
+            msg = 'Time {}, num steps {}, FPS {:.0f}, episode reward {}, episode length {}'
+            print(msg.format(time.strftime("%Hh %Mm %Ss",
+                             time.gmtime(time.time() - start_time)),
+                             counter.value, counter.value / (time.time() - start_time),
+                             reward_sum, episode_length))
             reward_sum = 0
             episode_length = 0
             actions.clear()
@@ -67,3 +67,4 @@ def test(rank, args, shared_model, counter):
             time.sleep(60)
 
         state = torch.from_numpy(state)
+
