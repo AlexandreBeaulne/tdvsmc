@@ -12,6 +12,7 @@ from test import test
 import train
 
 # Based on https://github.com/pytorch/examples/tree/master/mnist_hogwild
+ALGOS = {'nstepQlearning': train.nstepqlearning, 'A3C': train.a3c}
 
 parser = argparse.ArgumentParser(description='A3C')
 parser.add_argument('--lr', type=float, default=0.0001,
@@ -36,7 +37,7 @@ parser.add_argument('--max-episode-length', type=int, default=1000000,
                     help='maximum length of an episode (default: 1000000)')
 parser.add_argument('--env-name', default='PongDeterministic-v4',
                     help='environment to train on (default: PongDeterministic-v4)')
-parser.add_argument('--algo', default='A3C', choices={'A3C'})
+parser.add_argument('--algo', default='nstepQlearning', choices=ALGOS.keys())
 parser.add_argument('--total-steps', type=int, default=60000000,
                     help='total number of steps to train')
 
@@ -50,7 +51,6 @@ if __name__ == '__main__':
     torch.manual_seed(args.seed)
     env = create_atari_env(args.env_name)
 
-    algo = {'A3C': train.a3c}[args.algo]
 
     shared_model = ActorCritic(env.observation_space.shape[0], env.action_space.n)
     shared_model.share_memory()
@@ -62,6 +62,8 @@ if __name__ == '__main__':
 
     counter = mp.Value('i', 0)
     lock = mp.Lock()
+
+    algo = ALGOS[args.algo]
 
     p = mp.Process(target=test, args=(args.num_processes, args, shared_model, counter))
     p.start()
