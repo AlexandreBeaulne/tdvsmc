@@ -1,7 +1,8 @@
 
+from random import random
+
 import torch
 import torch.nn.functional as F
-import torch.optim as optim
 from torch.autograd import Variable
 
 from envs import create_atari_env
@@ -58,8 +59,9 @@ def train(args, policy_model, target_model, counter, lock, optimizer, rank):
             episode_length += 1
 
             if random() > epsilon(counter.value):
-                _, logit, (hx, cx) = model((Variable(state.unsqueeze(0)), (hx, cx)))
-                action = logit.max(dim=1)[1][0]
+                _, logit, (hx, cx) = model((Variable(state.unsqueeze(0), volatile=True), (hx, cx)))
+                prob = F.softmax(logit)
+                action = prob.max(1, keepdim=True)[1].data.numpy()[0, 0]
             else:
                 action = env.action_space.sample()
 
@@ -69,6 +71,8 @@ def train(args, policy_model, target_model, counter, lock, optimizer, rank):
 
             with lock:
                 counter.value += 1
+                if counter.value % 20000 == 0:
+                    target_model.load_state_dict(policy_model.state_dict())
 
             if done:
                 episode_length = 0
@@ -103,7 +107,4 @@ def train(args, policy_model, target_model, counter, lock, optimizer, rank):
 
         ensure_shared_grads(model, policy_model)
         optimizer.step()
-
-        if counter.value % 20000 == 0:
-            target_model.load_state_dict(policy_model.state_dict())
 
