@@ -13,7 +13,7 @@ def ensure_shared_grads(model, shared_model):
             return
         shared_param._grad = param.grad
 
-def train(rank, args, shared_model, counter, lock, optimizer):
+def train(args, shared_model, counter, lock, optimizer, rank):
     torch.manual_seed(args.seed + rank)
 
     env = create_atari_env(args.env_name)
