@@ -12,11 +12,11 @@ def ensure_shared_grads(model, shared_model):
             return
         shared_param._grad = param.grad
 
-def train(args, shared_model, counter, lock, optimizer, rank):
-    torch.manual_seed(args.seed + rank)
+def train(args, shared_model, counter, lock, optimizer, seed):
+    torch.manual_seed(seed)
 
     env = create_atari_env(args.env_name)
-    env.seed(args.seed + rank)
+    env.seed(seed)
 
     model = ActorCritic(env.observation_space.shape[0], env.action_space.n)
     model.train()

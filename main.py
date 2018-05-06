@@ -52,7 +52,6 @@ if __name__ == '__main__':
     torch.manual_seed(args.seed)
     env = create_atari_env(args.env_name)
 
-
     policy_model = ActorCritic(env.observation_space.shape[0], env.action_space.n)
     policy_model.share_memory()
 
@@ -79,7 +78,7 @@ if __name__ == '__main__':
     processes.append(p)
 
     for rank in range(args.num_processes):
-        p = mp.Process(target=algo, args=arguments + [rank])
+        p = mp.Process(target=algo, args=arguments + [args.seed + rank])
         p.start()
         processes.append(p)
     for p in processes:
