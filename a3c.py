@@ -89,7 +89,7 @@ def train(rank, args, shared_model, counter, lock, optimizer):
             delta_t = rewards[i] + args.gamma * values[i + 1].data - values[i].data
             gae = gae * args.gamma * args.tau + delta_t
 
-            policy_loss -= log_probs[i] * Variable(gae) - args.entropy_coef * entropies[i]
+            policy_loss = policy_loss - log_probs[i] * Variable(gae) - args.entropy_coef * entropies[i]
 
         optimizer.zero_grad()
 

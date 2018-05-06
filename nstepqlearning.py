@@ -82,8 +82,8 @@ def train(rank, args, shared_model, counter, lock, optimizer):
             R = args.gamma * R + rewards[i]
             _, logit, _ = model2((Variable(states[i].unsqueeze(0)), (hx, cx)))
             Q = logit[0][actions[i]]
-            loss += (R - Q).pow(2)
-            #loss += F.smooth_l1_loss(R, Q)
+            loss = loss + (R - Q).pow(2)
+            #loss = loss + F.smooth_l1_loss(R, Q)
 
         optimizer.zero_grad()
 
