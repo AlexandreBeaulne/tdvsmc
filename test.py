@@ -31,17 +31,19 @@ def test(rank, args, shared_model, counter):
     episode_length = 0
     while counter.value < args.total_steps:
         episode_length += 1
-        # Sync with the shared model
-        if done:
-            model.load_state_dict(shared_model.state_dict())
-            cx = Variable(torch.zeros(1, 256), volatile=True)
-            hx = Variable(torch.zeros(1, 256), volatile=True)
-        else:
-            cx = Variable(cx.data, volatile=True)
-            hx = Variable(hx.data, volatile=True)
 
-        _value, logit, (hx, cx) = model((Variable(
-            state.unsqueeze(0), volatile=True), (hx, cx)))
+        with torch.no_grad():
+            # Sync with the shared model
+            if done:
+                model.load_state_dict(shared_model.state_dict())
+                cx = Variable(torch.zeros(1, 256))
+                hx = Variable(torch.zeros(1, 256))
+            else:
+                cx = Variable(cx.data)
+                hx = Variable(hx.data)
+
+            _value, logit, (hx, cx) = model((Variable(state.unsqueeze(0)), (hx, cx)))
+
         prob = F.softmax(logit, dim=1)
         action = prob.max(1, keepdim=True)[1].data.numpy()
 

@@ -64,9 +64,8 @@ class SharedAdam(optim.Adam):
 
                 bias_correction1 = 1 - beta1**state['step'][0]
                 bias_correction2 = 1 - beta2**state['step'][0]
-                step_size = group['lr'] * math.sqrt(
-                    bias_correction2) / bias_correction1
+                step_size = group['lr'] * math.sqrt(bias_correction2) / bias_correction1
 
-                p.data.addcdiv_(-step_size, exp_avg, denom)
+                p.data.addcdiv_(value=-step_size[0], tensor1=exp_avg, tensor2=denom)
 
         return loss
