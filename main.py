@@ -1,4 +1,3 @@
-from __future__ import print_function
 
 import argparse
 import os
@@ -6,15 +5,15 @@ import os
 import torch
 import torch.multiprocessing as mp
 
-import my_optim
-from envs import create_atari_env
+import a3c
 from model import ActorCritic
+import my_optim
+import nstepqlearning
+from envs import create_atari_env
 from test import test
-from train import train
 
-# Based on
-# https://github.com/pytorch/examples/tree/master/mnist_hogwild
-# Training settings
+# Based on https://github.com/pytorch/examples/tree/master/mnist_hogwild
+
 parser = argparse.ArgumentParser(description='A3C')
 parser.add_argument('--lr', type=float, default=0.0001,
                     help='learning rate (default: 0.0001)')
@@ -38,40 +37,50 @@ parser.add_argument('--max-episode-length', type=int, default=1000000,
                     help='maximum length of an episode (default: 1000000)')
 parser.add_argument('--env-name', default='PongDeterministic-v4',
                     help='environment to train on (default: PongDeterministic-v4)')
-parser.add_argument('--no-shared', default=False,
-                    help='use an optimizer without shared momentum.')
+parser.add_argument('--algo', default='nstepQlearning', choices={'nstepQlearning', 'A3C'})
+parser.add_argument('--total-steps', type=int, default=60000000,
+                    help='total number of steps to train')
 
 
 if __name__ == '__main__':
+
     os.environ['OMP_NUM_THREADS'] = '1'
-    os.environ['CUDA_VISIBLE_DEVICES'] = ""
+    os.environ['CUDA_VISIBLE_DEVICES'] = ''
 
     args = parser.parse_args()
 
     torch.manual_seed(args.seed)
     env = create_atari_env(args.env_name)
-    shared_model = ActorCritic(
-        env.observation_space.shape[0], env.action_space)
-    shared_model.share_memory()
 
-    if args.no_shared:
-        optimizer = None
-    else:
-        optimizer = my_optim.SharedAdam(shared_model.parameters(), lr=args.lr)
-        optimizer.share_memory()
+    policy_model = ActorCritic(env.observation_space.shape[0], env.action_space.n)
+    policy_model.share_memory()
 
-    processes = []
+    optimizer = my_optim.SharedAdam(policy_model.parameters(), lr=args.lr)
+    optimizer.share_memory()
 
     counter = mp.Value('i', 0)
     lock = mp.Lock()
 
-    p = mp.Process(target=test, args=(args.num_processes, args, shared_model, counter))
+    if args.algo == 'nstepQlearning':
+        algo = nstepqlearning.train
+        target_model = ActorCritic(env.observation_space.shape[0], env.action_space.n)
+        target_model.load_state_dict(policy_model.state_dict())
+        target_model.share_memory()
+        arguments = [args, policy_model, target_model, counter, lock, optimizer]
+    elif args.algo == 'A3C':
+        algo = a3c.train
+        arguments = [args, policy_model, counter, lock, optimizer]
+
+    processes = []
+
+    p = mp.Process(target=test, args=(args.num_processes, args, policy_model, counter))
     p.start()
     processes.append(p)
 
-    for rank in range(0, args.num_processes):
-        p = mp.Process(target=train, args=(rank, args, shared_model, counter, lock, optimizer))
+    for rank in range(args.num_processes):
+        p = mp.Process(target=algo, args=arguments + [args.seed + rank])
         p.start()
         processes.append(p)
     for p in processes:
         p.join()
+
