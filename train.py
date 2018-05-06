@@ -50,7 +50,7 @@ def nstepqlearning(rank, args, shared_model, counter, lock, optimizer):
             _, logit, (hx, cx) = model2((Variable(state.unsqueeze(0)), (hx, cx)))
             prob = F.softmax(logit, dim=1)
 
-            action = prob.multinomial(num_samples=1).data
+            action = prob.multinomial().data
 
             state, reward, done, _ = env.step(action.numpy())
             done = done or episode_length >= args.max_episode_length
@@ -132,7 +132,7 @@ def a3c(rank, args, shared_model, counter, lock, optimizer):
             entropy = -(log_prob * prob).sum(1, keepdim=True)
             entropies.append(entropy)
 
-            action = prob.multinomial(num_samples=1).data
+            action = prob.multinomial().data
             log_prob = log_prob.gather(1, Variable(action))
 
             state, reward, done, _ = env.step(action.numpy())
@@ -178,7 +178,7 @@ def a3c(rank, args, shared_model, counter, lock, optimizer):
         optimizer.zero_grad()
 
         (policy_loss + args.value_loss_coef * value_loss).backward()
-        torch.nn.utils.clip_grad_norm_(model.parameters(), args.max_grad_norm)
+        torch.nn.utils.clip_grad_norm(model.parameters(), args.max_grad_norm)
 
         ensure_shared_grads(model, shared_model)
         optimizer.step()
