@@ -43,8 +43,8 @@ def train(rank, args, shared_model, counter, lock, optimizer):
             episode_length += 1
             value, logit, (hx, cx) = model((Variable(state.unsqueeze(0)),
                                             (hx, cx)))
-            prob = F.softmax(logit, dim=1)
-            log_prob = F.log_softmax(logit, dim=1)
+            prob = F.softmax(logit)
+            log_prob = F.log_softmax(logit)
             entropy = -(log_prob * prob).sum(1, keepdim=True)
             entropies.append(entropy)
 

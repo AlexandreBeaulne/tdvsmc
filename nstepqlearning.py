@@ -48,7 +48,7 @@ def train(rank, args, shared_model, counter, lock, optimizer):
             episode_length += 1
 
             _, logit, (hx, cx) = model2((Variable(state.unsqueeze(0)), (hx, cx)))
-            prob = F.softmax(logit, dim=1)
+            prob = F.softmax(logit)
 
             action = prob.multinomial().data
 
