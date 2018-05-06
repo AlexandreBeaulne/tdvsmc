@@ -13,7 +13,6 @@ from envs import create_atari_env
 from test import test
 
 # Based on https://github.com/pytorch/examples/tree/master/mnist_hogwild
-ALGOS = {'nstepQlearning': nstepqlearning.train, 'A3C': a3c.train}
 
 parser = argparse.ArgumentParser(description='A3C')
 parser.add_argument('--lr', type=float, default=0.0001,
@@ -38,12 +37,13 @@ parser.add_argument('--max-episode-length', type=int, default=1000000,
                     help='maximum length of an episode (default: 1000000)')
 parser.add_argument('--env-name', default='PongDeterministic-v4',
                     help='environment to train on (default: PongDeterministic-v4)')
-parser.add_argument('--algo', default='nstepQlearning', choices=ALGOS.keys())
+parser.add_argument('--algo', default='nstepQlearning', choices={'nstepQlearning', 'A3C'})
 parser.add_argument('--total-steps', type=int, default=60000000,
                     help='total number of steps to train')
 
 
 if __name__ == '__main__':
+
     os.environ['OMP_NUM_THREADS'] = '1'
     os.environ['CUDA_VISIBLE_DEVICES'] = ''
 
@@ -52,26 +52,33 @@ if __name__ == '__main__':
     torch.manual_seed(args.seed)
     env = create_atari_env(args.env_name)
 
+    policy_model = ActorCritic(env.observation_space.shape[0], env.action_space.n)
+    policy_model.share_memory()
 
-    shared_model = ActorCritic(env.observation_space.shape[0], env.action_space.n)
-    shared_model.share_memory()
-
-    optimizer = my_optim.SharedAdam(shared_model.parameters(), lr=args.lr)
+    optimizer = my_optim.SharedAdam(policy_model.parameters(), lr=args.lr)
     optimizer.share_memory()
-
-    processes = []
 
     counter = mp.Value('i', 0)
     lock = mp.Lock()
 
-    algo = ALGOS[args.algo]
+    if args.algo == 'nstepQlearning':
+        algo = nstepqlearning.train
+        target_model = ActorCritic(env.observation_space.shape[0], env.action_space.n)
+        target_model.load_state_dict(policy_model.state_dict())
+        target_model.share_memory()
+        arguments = [args, policy_model, target_model, counter, lock, optimizer]
+    elif args.algo == 'A3C':
+        algo = a3c.train
+        arguments = [args, policy_model, counter, lock, optimizer]
 
-    p = mp.Process(target=test, args=(args.num_processes, args, shared_model, counter))
+    processes = []
+
+    p = mp.Process(target=test, args=(args.num_processes, args, policy_model, counter))
     p.start()
     processes.append(p)
 
     for rank in range(args.num_processes):
-        p = mp.Process(target=algo, args=(rank, args, shared_model, counter, lock, optimizer))
+        p = mp.Process(target=algo, args=arguments + [args.seed + rank])
         p.start()
         processes.append(p)
     for p in processes:
