@@ -5,14 +5,15 @@ import os
 import torch
 import torch.multiprocessing as mp
 
+import a3c
 from model import ActorCritic
 import my_optim
+import nstepqlearning
 from envs import create_atari_env
 from test import test
-import train
 
 # Based on https://github.com/pytorch/examples/tree/master/mnist_hogwild
-ALGOS = {'nstepQlearning': train.nstepqlearning, 'A3C': train.a3c}
+ALGOS = {'nstepQlearning': nstepqlearning.train, 'A3C': a3c.train}
 
 parser = argparse.ArgumentParser(description='A3C')
 parser.add_argument('--lr', type=float, default=0.0001,
