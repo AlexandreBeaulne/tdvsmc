@@ -1,5 +1,4 @@
 import time
-from collections import deque
 
 import torch
 import torch.nn.functional as F
@@ -26,8 +25,6 @@ def test(rank, args, shared_model, counter):
 
     start_time = time.time()
 
-    # a quick hack to prevent the agent from stucking
-    actions = deque(maxlen=100)
     episode_length = 0
     while True:
         episode_length += 1
@@ -49,11 +46,6 @@ def test(rank, args, shared_model, counter):
         done = done or episode_length >= args.max_episode_length
         reward_sum += reward
 
-        # a quick hack to prevent the agent from stucking
-        actions.append(action[0, 0])
-        if actions.count(actions[0]) == actions.maxlen:
-            done = True
-
         if done:
             print("Time {}, num steps {}, FPS {:.0f}, episode reward {}, episode length {}".format(
                 time.strftime("%Hh %Mm %Ss",
@@ -62,11 +54,13 @@ def test(rank, args, shared_model, counter):
                 reward_sum, episode_length))
             reward_sum = 0
             episode_length = 0
-            actions.clear()
             state = env.reset()
             time.sleep(60)
 
-            filename = '{}_{}_{}.pt'.format(args.algo, 'pong', args.num_steps)
+			name = {'PongNoFrameskip-v4': 'pong',
+                    'SeaquestNoFrameskip-v4': 'seaquest'}[args.env_name]
+
+            filename = '{}_{}_{}.pt'.format(args.algo, name, args.num_steps)
             torch.save(shared_model.state_dict(), filename)
 
         state = torch.from_numpy(state)
