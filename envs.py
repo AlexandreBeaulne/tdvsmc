@@ -3,11 +3,11 @@ import gym
 import numpy as np
 from gym.spaces.box import Box
 
-games = {'pong': 'PongNoFrameskip-v4',
-         'seaquest': 'SeaquestNoFrameskip-v4',
-         'spaceinvaders': 'SpaceInvadersNoFrameskip-v4',
-         'frostbite': 'FrostbiteNoFrameskip-v4',
-         'beamrider': 'BeamRiderNoFrameskip-v4'}
+games = {'pong': 'PongDeterministic-v4',
+         'seaquest': 'SeaquestDeterministic-v4',
+         'spaceinvaders': 'SpaceInvadersDeterministic-v4',
+         'frostbite': 'FrostbiteDeterministic-v4',
+         'beamrider': 'BeamRiderDeterministic-v4'}
 
 # Taken from https://github.com/openai/universe-starter-agent
 def create_atari_env(game):
