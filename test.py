@@ -54,9 +54,9 @@ def test(rank, args, shared_model, counter):
             done = True
 
         if done:
-            msg = ('{}: game {}, num steps {}, FPS {:.0f}, '
+            msg = ('{}: game {}, algo {}, num steps {}, FPS {:.0f}, '
                    'episode reward {}, episode length {}')
-            print(msg.format(time.strftime("%Hh%Mm%Ss", args.game,
+            print(msg.format(time.strftime("%Hh%Mm%Ss", args.game, args.algo,
                              time.gmtime(time.time() - start_time)),
                              counter.value, counter.value / (time.time() - start_time),
                              reward_sum, episode_length))
