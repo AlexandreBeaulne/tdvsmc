@@ -39,7 +39,7 @@ parser.add_argument('--max-episode-length', type=int, default=1000000,
                     help='maximum length of an episode (default: 1000000)')
 parser.add_argument('--game', default='pong', choices=games.keys())
 parser.add_argument('--algo', default='nstepQlearning', choices={'nstepQlearning', 'A3C'})
-parser.add_argument('--total-steps', type=int, default=60000000,
+parser.add_argument('--total-steps', type=int, default=10000000,
                     help='total number of steps to train')
 
 

@@ -63,6 +63,10 @@ def test(rank, args, shared_model, counter):
             episode_length = 0
             actions.clear()
             state = env.reset()
+
+            filename = '{}_{}_{}.pt'.format(args.algo, args.game, args.num_steps)
+            torch.save(shared_model.state_dict(), filename)
+
             time.sleep(60)
 
         state = torch.from_numpy(state)
