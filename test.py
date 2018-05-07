@@ -66,4 +66,7 @@ def test(rank, args, shared_model, counter):
             state = env.reset()
             time.sleep(60)
 
+            filename = '{}_{}_{}.pt'.format('A3C', 'pong', args.num_steps)
+            torch.save(shared_model.state_dict(), filename)
+
         state = torch.from_numpy(state)
