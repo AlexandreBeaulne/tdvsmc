@@ -31,15 +31,15 @@ parser.add_argument('--max-grad-norm', type=float, default=50,
                     help='value loss coefficient (default: 50)')
 parser.add_argument('--seed', type=int, default=1,
                     help='random seed (default: 1)')
-parser.add_argument('--num-processes', type=int, default=4,
-                    help='how many training processes to use (default: 4)')
+parser.add_argument('--num-processes', type=int, default=70,
+                    help='how many training processes to use (default: 70)')
 parser.add_argument('--num-steps', type=int, default=20,
-                    help='number of forward steps in A3C (default: 20)')
+                    help='number of forward steps (default: 20)')
 parser.add_argument('--max-episode-length', type=int, default=1000000,
                     help='maximum length of an episode (default: 1000000)')
 parser.add_argument('--game', default='pong', choices=games.keys())
 parser.add_argument('--algo', default='nstepQlearning', choices={'nstepQlearning', 'A3C'})
-parser.add_argument('--total-steps', type=int, default=5000000,
+parser.add_argument('--total-steps', type=int, default=10000000,
                     help='total number of steps to train')
 
 
