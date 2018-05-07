@@ -7,10 +7,12 @@ import torch.multiprocessing as mp
 
 import a3c
 from envs import create_atari_env
+from envs import games
 from model import ActorCritic
 import my_optim
 import nstepqlearning
 from test import test
+
 
 # Based on https://github.com/pytorch/examples/tree/master/mnist_hogwild
 
@@ -35,8 +37,7 @@ parser.add_argument('--num-steps', type=int, default=20,
                     help='number of forward steps in A3C (default: 20)')
 parser.add_argument('--max-episode-length', type=int, default=1000000,
                     help='maximum length of an episode (default: 1000000)')
-parser.add_argument('--env-name', default='PongDeterministic-v4',
-                    help='environment to train on (default: PongDeterministic-v4)')
+parser.add_argument('--game', default='pong', choices=games.keys())
 parser.add_argument('--algo', default='nstepQlearning', choices={'nstepQlearning', 'A3C'})
 parser.add_argument('--total-steps', type=int, default=60000000,
                     help='total number of steps to train')
@@ -50,7 +51,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     torch.manual_seed(args.seed)
-    env = create_atari_env(args.env_name)
+    env = create_atari_env(args.game)
 
     policy_model = ActorCritic(env.observation_space.shape[0], env.action_space.n)
     policy_model.share_memory()

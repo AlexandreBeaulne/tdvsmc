@@ -12,7 +12,7 @@ from model import ActorCritic
 def test(rank, args, shared_model, counter):
     torch.manual_seed(args.seed + rank)
 
-    env = create_atari_env(args.env_name)
+    env = create_atari_env(args.game)
     env.seed(args.seed + rank)
 
     model = ActorCritic(env.observation_space.shape[0], env.action_space.n)

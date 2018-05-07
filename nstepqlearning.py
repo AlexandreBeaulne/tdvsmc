@@ -13,7 +13,7 @@ def train(args, policy_model, target_model, counter, lock, optimizer, seed):
 
     torch.manual_seed(seed)
 
-    env = create_atari_env(args.env_name)
+    env = create_atari_env(args.game)
     env.seed(seed)
 
     model = ActorCritic(env.observation_space.shape[0], env.action_space.n)

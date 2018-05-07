@@ -3,9 +3,15 @@ import gym
 import numpy as np
 from gym.spaces.box import Box
 
+games = {'pong': 'PongNoFrameskip-v4',
+         'seaquest': 'SeaquestNoFrameskip-v4',
+         'spaceinvaders': 'SpaceInvadersNoFrameskip-v4',
+         'frostbite': 'FrostbiteNoFrameskip-v4',
+         'beamrider': 'BeamRiderNoFrameskip-v4'}
 
 # Taken from https://github.com/openai/universe-starter-agent
-def create_atari_env(env_id):
+def create_atari_env(game):
+    env_id = games[game]
     env = gym.make(env_id)
     env = AtariRescale42x42(env)
     env = NormalizedEnv(env)
