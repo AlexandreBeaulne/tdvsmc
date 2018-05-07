@@ -57,8 +57,8 @@ def test(rank, args, shared_model, counter):
             state = env.reset()
             time.sleep(60)
 
-            name = {'PongNoFrameskip-v4': 'pong',
-                    'SeaquestNoFrameskip-v4': 'seaquest'}[args.env_name]
+            name = {'PongDeterministic-v4': 'pong',
+                    'SeaquestDeterministic-v4': 'seaquest'}[args.env_name]
 
             filename = '{}_{}_{}.pt'.format(args.algo, name, args.num_steps)
             torch.save(shared_model.state_dict(), filename)
