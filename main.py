@@ -16,7 +16,7 @@ from test import test
 
 # Based on https://github.com/pytorch/examples/tree/master/mnist_hogwild
 
-parser = argparse.ArgumentParser(description='A3C')
+parser = argparse.ArgumentParser()
 parser.add_argument('--lr', type=float, default=0.0001,
                     help='learning rate (default: 0.0001)')
 parser.add_argument('--gamma', type=float, default=0.99,

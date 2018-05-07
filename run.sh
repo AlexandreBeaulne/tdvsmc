@@ -3,10 +3,10 @@
 # Table 1
 
 echo "`date` n-step Q-learning pong 20"
-python -u main.py --algo nstepQlearning --game pong --total-steps 2000000 | tee -a log.txt
+python -u main.py --algo nstepQlearning --game pong --total-steps 2500000 --seed 3443 | tee -a log.txt
 
 echo "`date` A3C pong 20"
-python -u main.py --algo A3C --game pong --total-steps 2000000 | tee -a log.txt
+python -u main.py --algo A3C --game pong --total-steps 2500000 | tee -a log.txt
 
 echo "`date` n-step Q-learning seaquest 20"
 python -u main.py --algo nstepQlearning --game seaquest | tee -a log.txt
