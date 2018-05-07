@@ -38,9 +38,6 @@ parser.add_argument('--max-episode-length', type=int, default=1000000,
                     help='maximum length of an episode (default: 1000000)')
 parser.add_argument('--env-name', default='PongDeterministic-v4',
                     help='environment to train on (default: PongDeterministic-v4)')
-parser.add_argument('--no-shared', default=False,
-                    help='use an optimizer without shared momentum.')
-
 
 if __name__ == '__main__':
     os.environ['OMP_NUM_THREADS'] = '1'
@@ -54,11 +51,8 @@ if __name__ == '__main__':
         env.observation_space.shape[0], env.action_space)
     shared_model.share_memory()
 
-    if args.no_shared:
-        optimizer = None
-    else:
-        optimizer = my_optim.SharedAdam(shared_model.parameters(), lr=args.lr)
-        optimizer.share_memory()
+    optimizer = my_optim.SharedAdam(shared_model.parameters(), lr=args.lr)
+    optimizer.share_memory()
 
     processes = []
 
