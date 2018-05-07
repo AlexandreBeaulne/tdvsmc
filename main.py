@@ -6,10 +6,10 @@ import torch
 import torch.multiprocessing as mp
 
 import a3c
+from envs import create_atari_env
 from model import ActorCritic
 import my_optim
 import nstepqlearning
-from envs import create_atari_env
 from test import test
 
 # Based on https://github.com/pytorch/examples/tree/master/mnist_hogwild

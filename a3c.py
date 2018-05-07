@@ -5,12 +5,7 @@ from torch.autograd import Variable
 
 from envs import create_atari_env
 from model import ActorCritic
-
-def ensure_shared_grads(model, shared_model):
-    for param, shared_param in zip(model.parameters(), shared_model.parameters()):
-        if shared_param.grad is not None:
-            return
-        shared_param._grad = param.grad
+from utils import ensure_shared_grads
 
 def train(args, shared_model, counter, lock, optimizer, seed):
     torch.manual_seed(seed)
