@@ -5,6 +5,7 @@ from statistics import mean
 
 import torch
 from torch.autograd import Variable as Var
+import torch.nn.functional as F
 
 from envs import create_atari_env
 from model import ActorCritic
@@ -20,7 +21,7 @@ def main():
 
     rewards = []
 
-    for i in range(10):
+    for i in range(1):
 
         env = create_atari_env(game)
 
@@ -38,12 +39,14 @@ def main():
         while not done:
             cx, hx = Var(cx.data, volatile=True), Var(hx.data, volatile=True)
             _, logit, (hx, cx) = model((Var(state.unsqueeze(0), volatile=True), (hx, cx)))
-            action = logit.max(1, keepdim=True)[1].data.numpy()
+            prob = F.softmax(logit)
+            action = prob.max(1, keepdim=True)[1].data.numpy()
             state, reward, done, _ = env.step(action[0, 0])
             rewards[-1] += reward
             state = torch.from_numpy(state)
+            env.render()
 
-        print('run {}: {}'.format(i + 1, rewards[-1]))
+    env.close()
 
     print('algo,game,rollout,avg_score')
     print('{},{},{},{}'.format(algo, game, num_steps, mean(rewards)))
