@@ -2,8 +2,8 @@
 
 # Table 1
 
-python -u main.py --algo nstepQlearning --game pong --total-steps 1000000 | tee -a log.txt
-python -u main.py --algo A3C --game pong --total-steps 1000000 | tee -a log.txt
+python -u main.py --algo nstepQlearning --game pong --total-steps 2000000 | tee -a log.txt
+python -u main.py --algo A3C --game pong --total-steps 2000000 | tee -a log.txt
 
 python -u main.py --algo nstepQlearning --game seaquest | tee -a log.txt
 python -u main.py --algo A3C --game seaquest | tee -a log.txt
@@ -19,8 +19,8 @@ python -u main.py --algo A3C --game beamrider | tee -a log.txt
 
 # Figure 2
 
-python -u main.py --algo nstepQlearning --game pong --num-steps 1 --total-steps 1000000 | tee -a log.txt
-python -u main.py --algo nstepQlearning --game pong --num-steps 10 --total-steps 1000000 | tee -a log.txt
+python -u main.py --algo nstepQlearning --game pong --num-steps 1 --total-steps 2000000 | tee -a log.txt
+python -u main.py --algo nstepQlearning --game pong --num-steps 10 --total-steps 2000000 | tee -a log.txt
 python -u main.py --algo nstepQlearning --game pong --num-steps 50 --total-steps 1000000 | tee -a log.txt
 python -u main.py --algo nstepQlearning --game pong --num-steps 1000000000 --total-steps 1000000 | tee -a log.txt
 
