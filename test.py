@@ -54,10 +54,10 @@ def test(rank, args, shared_model, counter):
             done = True
 
         if done:
+            timestr = time.strftime("%Hh%Mm%Ss", time.gmtime(time.time() - start_time))
             msg = ('{}: game {}, algo {}, num steps {}, FPS {:.0f}, '
                    'episode reward {}, episode length {}')
-            print(msg.format(time.strftime("%Hh%Mm%Ss", args.game, args.algo,
-                             time.gmtime(time.time() - start_time)),
+            print(msg.format(timestr, args.game, args.algo,
                              counter.value, counter.value / (time.time() - start_time),
                              reward_sum, episode_length))
             reward_sum = 0
