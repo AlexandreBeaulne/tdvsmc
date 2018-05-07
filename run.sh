@@ -34,23 +34,23 @@ python -u main.py --algo A3C --game beamrider | tee -a log.txt
 
 # Figure 2
 
-echo "`date` n-step Q-learning pong 1"
-python -u main.py --algo nstepQlearning --game pong --num-steps 1 --total-steps 2000000 | tee -a log.txt
-echo "`date` n-step Q-learning pong 10"
-python -u main.py --algo nstepQlearning --game pong --num-steps 10 --total-steps 2000000 | tee -a log.txt
-echo "`date` n-step Q-learning pong 50"
-python -u main.py --algo nstepQlearning --game pong --num-steps 50 --total-steps 1000000 | tee -a log.txt
-echo "`date` n-step Q-learning pong inf"
-python -u main.py --algo nstepQlearning --game pong --num-steps 1000000000 --total-steps 1000000 | tee -a log.txt
+echo "`date` n-step Q-learning pong 1" | tee -a log.txt
+python -u main.py --algo nstepQlearning --game pong --num-steps 2 --total-steps 3000000 | tee -a log.txt
+echo "`date` n-step Q-learning pong 10" | tee -a log.txt
+python -u main.py --algo nstepQlearning --game pong --num-steps 10 --total-steps 3000000 | tee -a log.txt
+echo "`date` n-step Q-learning pong 50" | tee -a log.txt
+python -u main.py --algo nstepQlearning --game pong --num-steps 50 --total-steps 3000000 | tee -a log.txt
+echo "`date` n-step Q-learning pong inf" | tee -a log.txt
+python -u main.py --algo nstepQlearning --game pong --num-steps 1000000000 --total-steps 3000000 | tee -a log.txt
 
-echo "`date` A3C pong 1"
-python -u main.py --algo A3C --game pong --num-steps 1 --total-steps 1000000 | tee -a log.txt
-echo "`date` A3C pong 10"
-python -u main.py --algo A3C --game pong --num-steps 10 --total-steps 1000000 | tee -a log.txt
-echo "`date` A3C pong 50"
-python -u main.py --algo A3C --game pong --num-steps 50 --total-steps 1000000 | tee -a log.txt
-echo "`date` A3C pong inf"
-python -u main.py --algo A3C --game pong --num-steps 1000000000 --total-steps 1000000 | tee -a log.txt
+echo "`date` A3C pong 1" | tee -a log.txt
+python -u main.py --algo A3C --game pong --num-steps 2 --total-steps 3000000 | tee -a log.txt
+echo "`date` A3C pong 10" | tee -a log.txt
+python -u main.py --algo A3C --game pong --num-steps 10 --total-steps 3000000 | tee -a log.txt
+echo "`date` A3C pong 50" | tee -a log.txt
+python -u main.py --algo A3C --game pong --num-steps 50 --total-steps 3000000 | tee -a log.txt
+echo "`date` A3C pong inf" | tee -a log.txt
+python -u main.py --algo A3C --game pong --num-steps 1000000000 --total-steps 3000000 | tee -a log.txt
 
 echo "`date` n-step Q-learning seaquest 1"
 python -u main.py --algo nstepQlearning --game seaquest --num-steps 1 | tee -a log.txt
