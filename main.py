@@ -6,11 +6,12 @@ import os
 import torch
 import torch.multiprocessing as mp
 
+import a3c
 import my_optim
+import nstepqlearning
 from envs import create_atari_env
 from model import ActorCritic
 from test import test
-from train import train
 
 # Based on
 # https://github.com/pytorch/examples/tree/master/mnist_hogwild
@@ -38,6 +39,7 @@ parser.add_argument('--max-episode-length', type=int, default=1000000,
                     help='maximum length of an episode (default: 1000000)')
 parser.add_argument('--env-name', default='PongDeterministic-v4',
                     help='environment to train on (default: PongDeterministic-v4)')
+parser.add_argument('--algo', default='A3C', choices={'nstepqlearning', 'A3C'})
 
 if __name__ == '__main__':
     os.environ['OMP_NUM_THREADS'] = '1'
@@ -47,24 +49,33 @@ if __name__ == '__main__':
 
     torch.manual_seed(args.seed)
     env = create_atari_env(args.env_name)
-    shared_model = ActorCritic(
-        env.observation_space.shape[0], env.action_space)
+    shared_model = ActorCritic(env.observation_space.shape[0], env.action_space)
     shared_model.share_memory()
 
     optimizer = my_optim.SharedAdam(shared_model.parameters(), lr=args.lr)
     optimizer.share_memory()
 
-    processes = []
-
     counter = mp.Value('i', 0)
     lock = mp.Lock()
+
+    if args.algo == 'A3C':
+        train = a3c.train
+        arguments = [args, shared_model, counter, lock, optimizer]
+    elif args.algo == 'nstepqlearning':
+        train = nstepqlearning.train
+        target_model = ActorCritic(env.observation_space.shape[0], env.action_space)
+        target_model.load_state_dict(shared_model.state_dict())
+        target_model.share_memory()
+        arguments = [args, shared_model, target_model, counter, lock, optimizer]
+
+    processes = []
 
     p = mp.Process(target=test, args=(args.num_processes, args, shared_model, counter))
     p.start()
     processes.append(p)
 
     for rank in range(0, args.num_processes):
-        p = mp.Process(target=train, args=(rank, args, shared_model, counter, lock, optimizer))
+        p = mp.Process(target=train, args=arguments + [rank])
         p.start()
         processes.append(p)
     for p in processes:
