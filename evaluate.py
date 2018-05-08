@@ -35,7 +35,6 @@ def main():
 
     state = env.reset()
     state = torch.from_numpy(state)
-    done = False
 
     for i in range(args.num_frames):
         cx, hx = Var(cx.data, volatile=True), Var(hx.data, volatile=True)
@@ -49,8 +48,7 @@ def main():
         env2.render()
 
     env.close()
-
-
+    env2.close()
 
 if __name__ == '__main__':
     main()
